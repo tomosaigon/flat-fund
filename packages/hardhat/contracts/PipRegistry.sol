@@ -3,6 +3,10 @@ pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+interface ILongShortPair {
+	function pairName() external view returns (string memory);
+}
+
 // Priced Item Pairs (LSPs) Registry
 contract PipRegistry is Ownable {
     bool public paused;
@@ -33,6 +37,9 @@ contract PipRegistry is Ownable {
 
     function addAddress(address newAddress) public whenNotPaused {
         require(newAddress != address(0), "Invalid address");
+        // assume if it has pairName then it's a LSP || revert
+        ILongShortPair(newAddress).pairName();
+        
         whitelist.push(newAddress);
         emit AddressAdded(msg.sender, newAddress);
     }
