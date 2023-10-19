@@ -26,7 +26,7 @@ const deployWeightedMultiAssetVault: DeployFunction = async function (hre: Hardh
         // Contract constructor arguments
         args: [
             ['0x2058a9d7613eee744279e3856ef0eada5fcbaa7e', '0x4519097D038c47BEea6bbe3103262bF37e42c8D8'],
-            [1, 1],
+            [100, 200],
             'Food Vault',
             'FOOD',
         ],

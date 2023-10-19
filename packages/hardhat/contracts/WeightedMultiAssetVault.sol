@@ -12,11 +12,12 @@ contract WeightedMultiAssetVault is ERC4626 {
 
 	ERC20[] public multiAssets;
 	uint[] public multiAssetWeights;
+	uint16 public multiAssetsLength;
 
-    // _multiAssets[0] is the "base" asset
+	// _multiAssets[0] is the "base" asset
 	constructor(
 		ERC20[] memory _multiAssets,
-		uint[] memory _multiAssetWeights,
+		uint16[] memory _multiAssetWeights,
 		string memory _name,
 		string memory _symbol
 	) ERC4626(_multiAssets[0], _name, _symbol) {
@@ -25,12 +26,26 @@ contract WeightedMultiAssetVault is ERC4626 {
 			_multiAssets.length == _multiAssetWeights.length,
 			"Assets and weights length mismatch."
 		);
+		require(
+			_multiAssetWeights.length > 0 && _multiAssetWeights[0] == 100,
+			"The first weight must be normalized to 100 (representing 100% of 1 asset)."
+		);
+		require(
+			_multiAssets.length <= type(uint16).max,
+			"The length of multiAssets must fit a uint16."
+		);
 		multiAssets = _multiAssets;
 		multiAssetWeights = _multiAssetWeights;
+		multiAssetsLength = uint16(_multiAssets.length);
+	}
+
+	function getMultiAssetsAndWeights() external view returns (ERC20[] memory, uint[] memory) {
+		return (multiAssets, multiAssetWeights);
 	}
 
 	function totalAssets() public view override returns (uint256) {
-        return multiAssets[0].balanceOf(address(this));
+		// the first asset is normalized to represent the basket of assets in the vault
+		return multiAssets[0].balanceOf(address(this));
 	}
 
 	// function beforeWithdraw(uint256 assets, uint256 shares) internal override {
@@ -39,6 +54,7 @@ contract WeightedMultiAssetVault is ERC4626 {
 	// function afterDeposit(uint256 assets, uint256 shares) internal override {
 	// }
 
+	// function deposit(uint256 assets, address receiver)
 	function deposit(
 		uint256 amount,
 		address receiver
@@ -52,6 +68,7 @@ contract WeightedMultiAssetVault is ERC4626 {
 				weightedAmount
 			);
 		}
+		// the first asset weight is 100 so the weighted amount is the same as amount
 		return super.deposit(amount, receiver);
 	}
 
