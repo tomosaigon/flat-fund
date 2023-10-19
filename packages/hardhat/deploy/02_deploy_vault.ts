@@ -7,7 +7,7 @@ import { DeployFunction } from "hardhat-deploy/types";
  *
  * @param hre HardhatRuntimeEnvironment object.
  */
-const deployWeightedMultiAssetVault: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+const deployMultiAssetWeightedVault: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     /*
       On localhost, the deployer account is the one that comes with Hardhat, which is already funded.
   
@@ -21,7 +21,7 @@ const deployWeightedMultiAssetVault: DeployFunction = async function (hre: Hardh
     const { deployer } = await (hre as any).getNamedAccounts();
     const { deploy } = (hre as any).deployments;
 
-    await deploy("WeightedMultiAssetVault", {
+    await deploy("MultiAssetWeightedVault", {
         from: deployer,
         // Contract constructor arguments
         args: [
@@ -37,11 +37,11 @@ const deployWeightedMultiAssetVault: DeployFunction = async function (hre: Hardh
     });
 
     // Get the deployed contract
-    // const WeightedMultiAssetVault = await hre.ethers.getContract("WeightedMultiAssetVault", deployer);
+    // const MultiAssetWeightedVault = await hre.ethers.getContract("MultiAssetWeightedVault", deployer);
 };
 
-export default deployWeightedMultiAssetVault;
+export default deployMultiAssetWeightedVault;
 
 // Tags are useful if you have multiple deploy files and only want to run one of them.
-// e.g. yarn deploy --tags WeightedMultiAssetVault
-deployWeightedMultiAssetVault.tags = ["WeightedMultiAssetVault"];
+// e.g. yarn deploy --tags MultiAssetWeightedVault
+deployMultiAssetWeightedVault.tags = ["MultiAssetWeightedVault"];

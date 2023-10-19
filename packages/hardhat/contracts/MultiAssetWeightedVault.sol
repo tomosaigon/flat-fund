@@ -6,7 +6,7 @@ import { ERC20 } from "solmate/src/tokens/ERC20.sol";
 import { SafeTransferLib } from "solmate/src/utils/SafeTransferLib.sol";
 import { FixedPointMathLib } from "solmate/src/utils/FixedPointMathLib.sol";
 
-contract WeightedMultiAssetVault is ERC4626 {
+contract MultiAssetWeightedVault is ERC4626 {
 	using SafeTransferLib for ERC20;
 	using FixedPointMathLib for uint256;
 
