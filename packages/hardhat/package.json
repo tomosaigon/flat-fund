@@ -49,6 +49,7 @@
     "@openzeppelin/contracts": "^4.8.1",
     "dotenv": "^16.0.3",
     "envfile": "^6.18.0",
-    "qrcode": "^1.5.1"
+    "qrcode": "^1.5.1",
+    "solmate": "^6.2.0"
   }
 }
