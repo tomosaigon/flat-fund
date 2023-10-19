@@ -31,7 +31,16 @@ const mockContracts = {
   MintableERC20: {
     address: "0x2058a9d7613eee744279e3856ef0eada5fcbaa7e",
     abi: ERC20abi,
+  },
+  MintableERC20Clone: {
+    address: "0x4519097D038c47BEea6bbe3103262bF37e42c8D8",
+    abi: ERC20abi,
+  },
+  MintableERC20Clone2: {
+    address: "0xbBBe74E86c46F1504C3c58c862A7e0642BA8b4Cf",
+    abi: ERC20abi,
   }
+
 }
 
 function getContractDataFromDeployments() {
