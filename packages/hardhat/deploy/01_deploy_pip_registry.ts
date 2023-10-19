@@ -18,8 +18,8 @@ const deployPipRegistry: DeployFunction = async function (hre: HardhatRuntimeEnv
       with a random private key in the .env file (then used on hardhat.config.ts)
       You can run the `yarn account` command to check your balance in every network.
     */
-    const { deployer } = await hre.getNamedAccounts();
-    const { deploy } = hre.deployments;
+    const { deployer } = await (hre as any).getNamedAccounts();
+    const { deploy } = (hre as any).deployments;
 
     await deploy("PipRegistry", {
         from: deployer,
