@@ -30,12 +30,20 @@ const deployDeployBytecode: DeployFunction = async function (hre: HardhatRuntime
 
     for (let i = 0; i < addresses.length; i++) {
         prevDeployedAddress = addresses[i];
+        if (prevDeployedAddress === "") {
+            continue;
+        }
+        const code = await hre.ethers.provider.getCode(prevDeployedAddress);
+        if (code === '0x') {
+            continue;
+        }
+
         const prevUsdc = new hre.ethers.Contract(prevDeployedAddress, ERC20abi, signer);
         await prevUsdc.mint(hre.ethers.utils.parseEther('100'));
         await prevUsdc.transfer('0x95654e2B8A7B57E9DcF744f9Ccc6b79De2087e55', hre.ethers.utils.parseEther('50'));
     }
     // console.log('Contract deployed at address:', prevUsdc);
-    const code = await hre.ethers.provider.getCode(prevDeployedAddress);
+    const code = prevDeployedAddress === "" ? '0x' : await hre.ethers.provider.getCode(prevDeployedAddress);
     // If there is code at the address, it's a contract; otherwise, it's not.
     if (code !== '0x') {
         console.log('Skipping. Contract already deployed at address:', prevDeployedAddress);
@@ -52,7 +60,10 @@ const deployDeployBytecode: DeployFunction = async function (hre: HardhatRuntime
     const contract = await contractFactory.deploy(name, symbol, decimals);
     await contract.deployed();
 
-    console.log('Contract deployed at address:', contract.address);
+    console.log('1. USDC Cloned Contract deployed at address:', contract.address);
+    const contract2 = await contractFactory.deploy(name, symbol, decimals);
+    await contract2.deployed();
+    console.log('2. USDC Cloned Contract deployed at address:', contract2.address);
 
 };
 

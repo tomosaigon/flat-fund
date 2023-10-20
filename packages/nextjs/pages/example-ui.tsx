@@ -4,7 +4,7 @@ import { ContractData } from "~~/components/example-ui/ContractData";
 import { ContractInteraction } from "~~/components/example-ui/ContractInteraction";
 
 const ExampleUI: NextPage = () => {
-  return (
+    return (
     <>
       <MetaHeader
         title="Example UI | Scaffold-ETH 2"

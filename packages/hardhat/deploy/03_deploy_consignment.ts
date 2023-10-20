@@ -25,6 +25,10 @@ const deployConsignment: DeployFunction = async function (hre: HardhatRuntimeEnv
   const { deploy } = (hre as any).deployments;
 
   const addresses = [mockContracts.MintableERC20Clone.address, mockContracts.MintableERC20Clone2.address];
+  if (addresses[0] === "" || addresses[1] === "") {
+    console.log("Please deploy the MintableERC20Clone contract first");
+    return;
+  }
 
   await deploy("Consignment", {
     from: deployer,
@@ -66,7 +70,7 @@ const deployConsignment: DeployFunction = async function (hre: HardhatRuntimeEnv
   const buyOrSell = true; // 'true' for buy
   const maxAmount = hre.ethers.utils.parseEther("2");
   const price = hre.ethers.utils.parseEther("1");
-  const nonce = 3;
+  const nonce = 1;
   const amount = hre.ethers.utils.parseEther("1");
 
   // Construct the message
