@@ -37,6 +37,7 @@ const config: HardhatUserConfig = {
     // View the networks that are pre-configured.
     // If the network you are looking for is not here you can add new network settings
     hardhat: {
+      chainId: 80001,
       forking: {
         // url: `https://eth-mainnet.alchemyapi.io/v2/${providerApiKey}`,
         url: `https://polygon-mumbai.infura.io/v3/${providerApiKey}`,
