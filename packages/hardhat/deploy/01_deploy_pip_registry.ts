@@ -36,6 +36,7 @@ const deployPipRegistry: DeployFunction = async function (hre: HardhatRuntimeEnv
     try {
         const MockPair = await hre.ethers.getContract("MockPair", deployer);
         if (MockPair.address !== undefined) {
+            console.log("Adding MockPair to PipRegistry");
             await PipRegistry.addAddress(MockPair.address);
         }
     } catch (e) {
