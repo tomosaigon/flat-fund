@@ -2,12 +2,12 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 
 /**
- * Deploys a contract named "MockPair" using the deployer account and
+ * Deploys a contract named "MockPairButter" using the deployer account and
  * constructor arguments set to the deployer address
  *
  * @param hre HardhatRuntimeEnvironment object.
  */
-const deployMockPair: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+const deployMockPairButter: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     /*
       On localhost, the deployer account is the one that comes with Hardhat, which is already funded.
   
@@ -22,10 +22,10 @@ const deployMockPair: DeployFunction = async function (hre: HardhatRuntimeEnviro
     const { deploy } = (hre as any).deployments;
     const LongBread = await hre.ethers.getContract("LongBread", deployer);
     const LongButter = await hre.ethers.getContract("LongButter", deployer);
-    await deploy("MockPair", {
+    await deploy("MockPairButter", {
         from: deployer,
         // Contract constructor arguments
-        args: ['Bread Pair', LongBread.address, LongButter.address],
+        args: ['Butter Pair', LongButter.address, LongButter.address],
         log: true,
         // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
         // automatically mining the contract deployment transaction. There is no effect on live networks.
@@ -33,11 +33,11 @@ const deployMockPair: DeployFunction = async function (hre: HardhatRuntimeEnviro
     });
 
     // Get the deployed contract
-    // const MockPair = await hre.ethers.getContract("MockPair", deployer);
+    // const MockPairButter = await hre.ethers.getContract("MockPairButter", deployer);
 };
 
-export default deployMockPair;
+export default deployMockPairButter;
 
 // Tags are useful if you have multiple deploy files and only want to run one of them.
-// e.g. yarn deploy --tags MockPair
-deployMockPair.tags = ["MockPair"];
+// e.g. yarn deploy --tags MockPairButter
+deployMockPairButter.tags = ["MockPairButter"];
