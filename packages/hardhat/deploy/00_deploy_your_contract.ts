@@ -8,6 +8,17 @@ import { DeployFunction } from "hardhat-deploy/types";
  * @param hre HardhatRuntimeEnvironment object.
  */
 const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+
+
+
+
+
+  return; // don't
+
+
+
+
+
   /*
     On localhost, the deployer account is the one that comes with Hardhat, which is already funded.
 
