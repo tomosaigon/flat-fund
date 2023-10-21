@@ -4,13 +4,13 @@ export const mockContracts = {
         address: "0x2058a9d7613eee744279e3856ef0eada5fcbaa7e",
         abi: ERC20abi,
     },
-    // fill in the addresses of the deployed contracts, "" means not yet
-    MintableERC20Clone: {
-        address: "0xdc895ed684ed021f23a87c334d7c39578987b42b",
-        abi: ERC20abi,
-    },
-    MintableERC20Clone2: {
-        address: "0xd1da6cdc496280c86f7b78ca36eac61d9ffe4bc6",
-        abi: ERC20abi,
-    }
+    // // fill in the addresses of the deployed contracts, "" means not yet
+    // MintableERC20Clone: {
+    //     address: "0xdc895ed684ed021f23a87c334d7c39578987b42b",
+    //     abi: ERC20abi,
+    // },
+    // MintableERC20Clone2: {
+    //     address: "",
+    //     abi: ERC20abi,
+    // }
 }
