@@ -20,7 +20,13 @@ import { createPublicClient, createWalletClient, http, custom, ReadContractParam
 import { polygonMumbai } from 'viem/chains';
 import { useContractWrite, usePrepareContractWrite, useContractRead, useNetwork } from "wagmi";
 
-
+// https://mumbai.polygonscan.com/tx/0x30c19ed890d1612bdbe301347cd40815f0a148835dd8bd3ffbc3e15da3fc5f2c#eventlog
+// longToken:
+// 0xfd6ca1c692af2a9dcc2c18ccbecefaca1561c09e
+// shortToken:
+// 0x46b79d9ead2138dd741d210f064bd04328df1c83
+// https://testnet.interchain.axelar.dev/polygon-mumbai/0xFD6Ca1C692aF2A9dcc2C18CcbECEfAca1561c09e
+// https://testnet.axelarscan.io/gmp/0x670204b8b3a1ea066f9d2ddd5d1af66a76d5b462f397a837faef9bc0f958d050
 const params = {
   pairName: 'Flat Bread Range Token Pair November 2023',
   expirationTimestamp: '1698685200',
@@ -195,7 +201,7 @@ const LongShortPairForm = () => {
     address: lspCreatorAddress,
     abi: LongShortPairCreator.abi,
     functionName: 'createLongShortPair',
-    args: [{...params, pairName}],
+    args: [{...params, pairName, expirationTimestamp, collateralPerPair, priceIdentifier, longSynthName, longSynthSymbol, shortSynthName, shortSynthSymbol, collateralToken, financialProductLibrary, customAncillaryData, proposerReward, optimisticOracleLivenessTime, optimisticOracleProposerBond}],
     onSettled(data, error) {
       console.log('Settled', { data, error });
       if (error === null && data?.result) {
