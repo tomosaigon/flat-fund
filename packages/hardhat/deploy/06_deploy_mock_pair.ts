@@ -2,12 +2,12 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 
 /**
- * Deploys a contract named "PipRegistry" using the deployer account and
+ * Deploys a contract named "MockPair" using the deployer account and
  * constructor arguments set to the deployer address
  *
  * @param hre HardhatRuntimeEnvironment object.
  */
-const deployPipRegistry: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+const deployMockPair: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     /*
       On localhost, the deployer account is the one that comes with Hardhat, which is already funded.
   
@@ -20,11 +20,12 @@ const deployPipRegistry: DeployFunction = async function (hre: HardhatRuntimeEnv
     */
     const { deployer } = await (hre as any).getNamedAccounts();
     const { deploy } = (hre as any).deployments;
-
-    await deploy("PipRegistry", {
+    const LongBread = await hre.ethers.getContract("LongBread", deployer);
+    const LongButter = await hre.ethers.getContract("LongButter", deployer);
+    await deploy("MockPair", {
         from: deployer,
         // Contract constructor arguments
-        args: [],
+        args: ['Bread Pair', LongBread.address, LongButter.address],
         log: true,
         // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
         // automatically mining the contract deployment transaction. There is no effect on live networks.
@@ -32,15 +33,11 @@ const deployPipRegistry: DeployFunction = async function (hre: HardhatRuntimeEnv
     });
 
     // Get the deployed contract
-    const PipRegistry = await hre.ethers.getContract("PipRegistry", deployer);
-    const MockPair = await hre.ethers.getContract("MockPair", deployer);
-    if (MockPair.address !== undefined) {
-        await PipRegistry.addAddress(MockPair.address);
-    }
+    // const MockPair = await hre.ethers.getContract("MockPair", deployer);
 };
 
-export default deployPipRegistry;
+export default deployMockPair;
 
 // Tags are useful if you have multiple deploy files and only want to run one of them.
-// e.g. yarn deploy --tags PipRegistry
-deployPipRegistry.tags = ["PipRegistry"];
+// e.g. yarn deploy --tags MockPair
+deployMockPair.tags = ["MockPair"];
