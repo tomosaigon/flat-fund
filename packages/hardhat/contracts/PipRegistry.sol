@@ -13,6 +13,7 @@ interface ILongShortPair {
 // Priced Item Pairs (LSPs) Registry
 contract PipRegistry is Ownable {
 	bool public paused;
+	bool public insertingPaused;
 	address[] public whitelist;
 
 	uint256 public _tableId = 8036;
@@ -26,6 +27,7 @@ contract PipRegistry is Ownable {
 
 	constructor() {
 		paused = false;
+		insertingPaused = false;
 	}
 
 	modifier whenNotPaused() {
@@ -43,6 +45,14 @@ contract PipRegistry is Ownable {
 		emit ContractUnpaused(msg.sender);
 	}
 
+	function pauseInserting() public onlyOwner {
+		insertingPaused = true;
+	}
+
+	function unpauseInserting() public onlyOwner {
+		insertingPaused = false;
+	}
+
 	function addAddress(address newAddress) public whenNotPaused {
 		require(newAddress != address(0), "Invalid address");
 		// assume if it has pairName then it's a LSP || revert
@@ -50,7 +60,9 @@ contract PipRegistry is Ownable {
 
 		whitelist.push(newAddress);
 		emit AddressAdded(msg.sender, newAddress);
-		insert(newAddress);
+        if (!insertingPaused) {
+            insert(newAddress);
+        }
 	}
 
 	function getAddress(uint256 index) public view returns (address) {
