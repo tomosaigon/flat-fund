@@ -240,11 +240,11 @@ const DefineMawv: React.FC<{ contractMultiAssetWeightedVaultFactory: any }> = ({
 
   const { writeAsync, isLoading } = useScaffoldContractWrite({
     contractName: "MultiAssetWeightedVaultFactory",
-    functionName: 'foo',
-    // functionName: 'createVault',
+    // functionName: 'foo',
+    functionName: 'createVault',
     args: [
-      // tokenWeights.map((tokenWeight) => tokenWeight.address) as string[],
-      // tokenWeights.map((tokenWeight) => tokenWeight.weight) as number[],
+      tokenWeights.map((tokenWeight) => tokenWeight.address) as string[],
+      tokenWeights.map((tokenWeight) => tokenWeight.weight) as number[],
       basketName,
       basketSymbol,
     ],
