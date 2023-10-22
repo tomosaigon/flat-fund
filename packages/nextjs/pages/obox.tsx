@@ -3,10 +3,13 @@ import { MetaHeader } from "~~/components/MetaHeader";
 import { ContractData } from "~~/components/example-ui/ContractData";
 import { ContractInteraction } from "~~/components/example-ui/ContractInteraction";
 import { Wallet } from "ethers";
-import { formatEther, parseEther } from 'viem'
+import { type WalletClient, useWalletClient } from 'wagmi'
+import { formatEther, parseEther, encodePacked, keccak256 } from 'viem'
 import { Client, Conversation } from "@xmtp/xmtp-js";
 import React, { useState, useEffect } from "react";
 import { toast } from 'react-toastify';
+import { useDeployedContractInfo, useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+
 
 interface HistoricalTrade {
   buyOrSell: boolean;
@@ -141,6 +144,7 @@ const OBOX: React.FC<OBOXProps> = ({ offers, makeOffer }) => {
   const [price, setPrice] = useState<bigint>(parseEther('4.20'));
   const [buyOrSell, setBuyOrSell] = useState<string>('buy');
 
+  const { data: Consignment, isLoading } = useDeployedContractInfo("Consignment");
   const handleMakeOffer = () => {
     if (buyOrSell === 'buy') {
       makeOffer(true, baseAmount, price);
@@ -148,8 +152,58 @@ const OBOX: React.FC<OBOXProps> = ({ offers, makeOffer }) => {
       makeOffer(false, baseAmount, price);
     }
   };
+  const { data: walletClient } = useWalletClient({ chainId: 80001 });
+
+  // const { writeAsync, isLoading } = useScaffoldContractWrite({
+  //   contractName: "Consignment",
+  //   functionName: 'takeOffer',
+  //   args: [
+  //     tokenWeights.map((tokenWeight) => tokenWeight.address) as string[],
+  //     tokenWeights.map((tokenWeight) => tokenWeight.weight) as number[],
+  //     basketName,
+  //     basketSymbol,
+  //   ],
+  //   onBlockConfirmation: (txnReceipt: any) => {
+  //     console.log("📦 Transaction blockHash", txnReceipt.blockHash);
+  //   },
+  // });
   const handleTakeOffer = (id: number) => {
     console.log(`Taking offer with id ${id}`);
+    const buyOrSell = true; // 'true' for buy
+    const maxAmount = parseEther("2");
+    const price = parseEther("1");
+    const nonce = BigInt(Math.floor(Date.now() / 1000));
+    const amount = parseEther("1");
+
+    if (!walletClient) {
+      debugger
+      return;
+    }
+
+    // // Construct the message
+    // const messageHash = keccak256(encodePacked(
+    //   ["address", "bool", "uint256", "uint256", "uint256"],
+    //   [Consignment.address, buyOrSell, maxAmount, price, nonce]
+    // ));
+    // if (!walletClient) {
+    //   debugger
+    //   return;
+    // }
+    // (async () => {
+    //   const signature = await walletClient.signMessage({
+    //     // walletClient
+    //     message: messageHash,
+    //   })
+    //   console.log(signature);
+    // })();
+    // let messageHashBinary = hre.ethers.utils.arrayify(messageHash);
+    // const signature = await offerer.signMessage(messageHashBinary);
+
+    // const tx = await takerConsignment.takeOffer(buyOrSell, maxAmount, price, nonce, signature, amount);
+  };
+
+  const handleDepositToConsignment = () => {
+    // Logic for depositing to consignment
   };
 
 
@@ -203,6 +257,14 @@ const OBOX: React.FC<OBOXProps> = ({ offers, makeOffer }) => {
           >
             Make Offer
           </button>
+
+          <button
+            type="button"
+            onClick={handleDepositToConsignment}
+            className="bg-green-500 text-white p-2 rounded hover-bg-green-700"
+          >
+            Deposit to Consignment
+          </button>
         </form>
       </div>
 
@@ -239,7 +301,32 @@ const OBOX: React.FC<OBOXProps> = ({ offers, makeOffer }) => {
   );
 };
 
+async function signOfferWithWallet(walletClient: WalletClient, address: string, buyOrSell: boolean, maxAmount: bigint, price: bigint, nonce: bigint) {
+  const messageHash = keccak256(encodePacked(
+    ["address", "bool", "uint256", "uint256", "uint256"],
+    [address, buyOrSell, maxAmount, price, nonce]
+  ));
+
+  if (!walletClient) {
+    debugger;
+    return;
+  }
+
+  try {
+    const signature = await walletClient.signMessage({
+      message: messageHash,
+    });
+    console.log(signature);
+    return signature;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
 const OBOXUI: NextPage = () => {
+  const { data: walletClient } = useWalletClient({ chainId: 80001 });
+  const { data: Consignment, isLoading } = useDeployedContractInfo("Consignment");
   const [client, setClient] = useState<Client>();
   const [wallet, setWallet] = useState<Wallet>();
   const [address, setAddress] = useState<string>();
@@ -249,7 +336,11 @@ const OBOXUI: NextPage = () => {
   const makeOffer = (buyOrSell: boolean, maxBaseAmount: bigint, price: bigint) => {
     const nonce = Math.floor(Date.now() / 1000);
 
-    oboxConversation?.send(`offer ${buyOrSell ? 'buy' : 'sell'} ${maxBaseAmount.toString()} ${price.toString()} ${nonce} 0x123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef01`);
+    signOfferWithWallet(walletClient as WalletClient, Consignment.address, buyOrSell, maxBaseAmount, price, BigInt(nonce)).then((signature) => {
+      console.log(signature);
+      debugger;
+      oboxConversation?.send(`offer ${buyOrSell ? 'buy' : 'sell'} ${maxBaseAmount.toString()} ${price.toString()} ${nonce} ${signature}`);
+    })
   }
 
   useEffect(() => {
