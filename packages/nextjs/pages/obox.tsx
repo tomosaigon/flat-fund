@@ -5,6 +5,7 @@ import { ContractInteraction } from "~~/components/example-ui/ContractInteractio
 import { Wallet } from "ethers";
 import { Client } from "@xmtp/xmtp-js";
 import React, { useState, useEffect } from "react";
+import { toast } from 'react-toastify';
 
 interface HistoricalTrade {
   buyOrSell: boolean;
@@ -17,61 +18,61 @@ const historicalTrades = [
     buyOrSell: true, // Buy
     baseAmount: 100,
     price: 50,
-    date: '2023-10-22 10:30:00', 
+    date: '2023-10-22 10:30:00',
   },
   {
     buyOrSell: true, // Buy
     baseAmount: 75,
     price: 55,
-    date: '2023-10-21 11:15:00', 
+    date: '2023-10-21 11:15:00',
   },
   {
     buyOrSell: false, // Sell
     baseAmount: 120,
     price: 48,
-    date: '2023-10-20 12:45:00', 
+    date: '2023-10-20 12:45:00',
   },
   {
     buyOrSell: true, // Buy
     baseAmount: 90,
     price: 60,
-    date: '2023-10-19 14:20:00', 
+    date: '2023-10-19 14:20:00',
   },
   {
     buyOrSell: true, // Buy
     baseAmount: 150,
     price: 52,
-    date: '2023-10-18 15:05:00', 
+    date: '2023-10-18 15:05:00',
   },
   {
     buyOrSell: false, // Sell
     baseAmount: 80,
     price: 58,
-    date: '2023-10-17 16:40:00', 
+    date: '2023-10-17 16:40:00',
   },
   {
     buyOrSell: true, // Buy
     baseAmount: 110,
     price: 51,
-    date: '2023-10-16 18:10:00', 
+    date: '2023-10-16 18:10:00',
   },
   {
     buyOrSell: false, // Sell
     baseAmount: 70,
     price: 56,
-    date: '2023-10-15 20:25:00', 
+    date: '2023-10-15 20:25:00',
   },
   {
     buyOrSell: true, // Buy
     baseAmount: 130,
     price: 49,
-    date: '2023-10-14 22:35:00', 
+    date: '2023-10-14 22:35:00',
   },
   {
     buyOrSell: false, // Sell
     baseAmount: 85,
     price: 57,
-    date: '2023-10-13 23:45:00', 
+    date: '2023-10-13 23:45:00',
   },
 ];
 
@@ -124,60 +125,26 @@ const mockOffers = [
     nonce: 5,
     signature: '0x90abcdef12345678',
   },
-  {
-    id: 6,
-    buyOrSell: false, // Sell
-    maxBaseAmount: 80,
-    price: 750000000000000000, // 0.75 ETH in 1e18
-    nonce: 6,
-    signature: '0xcdef1234567890ab',
-  },
-  {
-    id: 7,
-    buyOrSell: true, // Buy
-    maxBaseAmount: 110,
-    price: 900000000000000000, // 0.9 ETH in 1e18
-    nonce: 7,
-    signature: '0xdef1234567890abc',
-  },
-  {
-    id: 8,
-    buyOrSell: false, // Sell
-    maxBaseAmount: 70,
-    price: 800000000000000000, // 0.8 ETH in 1e18
-    nonce: 8,
-    signature: '0x234567890abcdef1',
-  },
-  {
-    id: 9,
-    buyOrSell: true, // Buy
-    maxBaseAmount: 130,
-    price: 950000000000000000, // 0.95 ETH in 1e18
-    nonce: 9,
-    signature: '0x567890abcdef1234',
-  },
-  {
-    id: 10,
-    buyOrSell: false, // Sell
-    maxBaseAmount: 85,
-    price: 900000000000000000, // 0.9 ETH in 1e18
-    nonce: 10,
-    signature: '0x7890abcdef123456',
-  },
 ];
 
 
 
-const OBOX: React.FC = () => {
+interface OBOXProps {
+  offers: Offer[];
+}
+
+const OBOX: React.FC<OBOXProps> = ({ offers }) => {
   const [baseAmount, setBaseAmount] = useState<number>(0);
   const [quoteAmount, setQuoteAmount] = useState<number>(0);
   const [price, setPrice] = useState<number>(0);
   const [buyOrSell, setBuyOrSell] = useState<string>('');
 
-  const offers = mockOffers;
-
   const handleClick = () => {
   };
+  const handleTakeOffer = (id: number) => {
+    console.log(`Taking offer with id ${id}`);
+  };
+
 
   return (
     <>
@@ -239,14 +206,26 @@ const OBOX: React.FC = () => {
         <h3 className="text-xl font-bold mb-2">Order Book</h3>
         {offers.map((offer) => (
           <div key={offer.id} className="mb-4">
-            <span>[{offer.id}] </span>
-            <span>{offer.buyOrSell ? 'Buy' : 'Sell'} </span>
-            <span>up to {offer.maxBaseAmount} </span>
-            <span>at {offer.price / 1e18} flatBREAD-1123/USDC</span>
+            <div className="p-2 inline-block">
+              <button
+                onClick={() => handleTakeOffer(offer.id)}
+                className="bg-blue-500 text-white font-bold p-2 rounded"
+              >
+                Take Offer
+              </button>
+            </div>
+            <div className="border border-gray-500 p-2 inline-block">
+              <span>{offer.id.toString().padStart(4, '0')} </span>
+            </div>
+            <span> <strong>{offer.buyOrSell ? 'Buy' : 'Sell'}</strong> </span>
+            <span>up to {offer.maxBaseAmount / 1e18} <code>flatBREAD-1123</code> </span>
+            <span>at {offer.price / 1e18} <code>USDC</code></span>
             {/* <span>Nonce: {offer.nonce}</span> */}
             {/* <span>Signature: {offer.signature}</span> */}
           </div>
         ))}
+
+
       </div>
 
     </>
@@ -257,8 +236,9 @@ const OBOXUI: NextPage = () => {
   const [client, setClient] = useState<Client>();
   const [wallet, setWallet] = useState<Wallet>();
   const [address, setAddress] = useState<string>();
+  const [offers, setOffers] = useState<Offer[]>(mockOffers);
+
   useEffect(() => {
-    return
     (async () => {
       // const client = new Client();
       // setClient(client);
@@ -273,21 +253,61 @@ const OBOXUI: NextPage = () => {
       setWallet(wallet);
       setAddress(wallet.address);
 
-      const xmtp = await Client.create(wallet, { env: "dev" });
-      // const xmtp = await Client.create(wallet, { env: "production" });
+      // const xmtp = await Client.create(wallet, { env: "dev" });
+      const xmtp = await Client.create(wallet, { env: "production" });
       console.log("Client created", xmtp.address);
 
-      const oboxAddr = '0xDf8EC3c1BBd18cF04af2fdBa7a210AeEC374925a';
+      const oboxAddr = '0x59f71427979105DBcD0FAe27845dee2441B37c6C';
       const isOnProdNetwork = await xmtp.canMessage(oboxAddr);
       console.log("Can message: " + isOnProdNetwork);
       const conversation = await xmtp.conversations.newConversation(oboxAddr);
       console.log("Conversation created", conversation);
-      const message = await conversation.send("gm");
+      // const message = await conversation.send("gm");
+      const message = await conversation.send("subscribe");
       console.log("Message sent", message);
-      debugger;
+      // debugger;
+      const seenMessages: Record<string, boolean> = {}; 
       for await (const message of await xmtp.conversations.streamAllMessages()) {
+        if (seenMessages[message.id]) {
+          console.log(`Message with ID ${message.id} has already been seen.`);
+          continue; // Skip this message
+        }
+
+        seenMessages[message.id] = true;
+        console.log("New message ", message);
         console.log(`New message from ${message.senderAddress}: ${message.content}`);
+
+        if (message.senderAddress === oboxAddr && message.content) {
+          const contentParts = message.content.split(' ');
+
+          if (contentParts.length >= 6 && contentParts[0] === 'offer' && contentParts[1].startsWith('#')) {
+            const potentialID = parseInt(contentParts[1].substring(1), 10);
+
+            if (!isNaN(potentialID)) {
+              const receivedOfferID = parseInt(contentParts[1].substring(1), 10); // Parse the ID
+              const action = contentParts[2];
+              const maxBaseAmount = contentParts[3];
+              const priceAmount = contentParts[4];
+              const nonceAmount = contentParts[5];
+
+              console.log(`Received an offer - ID: ${receivedOfferID}, Action: ${action}, Max: ${maxBaseAmount}, Price: ${priceAmount}, Nonce: ${nonceAmount}`);
+              toast.success(`Received an offer - ID: ${receivedOfferID}, Action: ${action}, Max: ${maxBaseAmount}, Price: ${priceAmount}, Nonce: ${nonceAmount}`);
+
+              const newOffer = {
+                id: receivedOfferID,
+                buyOrSell: action === 'buy',
+                maxBaseAmount: Number(maxBaseAmount),
+                price: Number(priceAmount),
+                nonce: Number(nonceAmount),
+                signature: ''
+              };
+
+              setOffers(prevOffers => [...prevOffers, newOffer]);
+            }
+          }
+        }
       }
+
     })();
   }, []);
 
@@ -358,7 +378,7 @@ const OBOXUI: NextPage = () => {
         </div>
       </div>
       <div className="grid lg:grid-cols-2 flex-grow" data-theme="exampleUi">
-        <OBOX />
+        <OBOX offers={offers}/>
       </div>
     </>
   );
