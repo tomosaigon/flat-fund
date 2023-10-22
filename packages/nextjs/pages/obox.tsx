@@ -3,6 +3,7 @@ import { MetaHeader } from "~~/components/MetaHeader";
 import { ContractData } from "~~/components/example-ui/ContractData";
 import { ContractInteraction } from "~~/components/example-ui/ContractInteraction";
 import { Wallet } from "ethers";
+import { formatEther, parseEther } from 'viem'
 import { Client, Conversation } from "@xmtp/xmtp-js";
 import React, { useState, useEffect } from "react";
 import { toast } from 'react-toastify';
@@ -131,14 +132,14 @@ const mockOffers = [
 
 interface OBOXProps {
   offers: Offer[];
-  makeOffer: (buyOrSell: boolean, maxBaseAmount: number, price: number) => void;
+  makeOffer: (buyOrSell: boolean, maxBaseAmount: bigint, price: bigint) => void;
 }
 
 const OBOX: React.FC<OBOXProps> = ({ offers, makeOffer }) => {
-  const [baseAmount, setBaseAmount] = useState<number>(0);
-  const [quoteAmount, setQuoteAmount] = useState<number>(0);
-  const [price, setPrice] = useState<number>(0);
-  const [buyOrSell, setBuyOrSell] = useState<string>('');
+  const [baseAmount, setBaseAmount] = useState<bigint>(parseEther('1337'));
+  // const [quoteAmount, setQuoteAmount] = useState<bigint>(0);
+  const [price, setPrice] = useState<bigint>(parseEther('4.20'));
+  const [buyOrSell, setBuyOrSell] = useState<string>('buy');
 
   const handleMakeOffer = () => {
     if (buyOrSell === 'buy') {
@@ -177,8 +178,8 @@ const OBOX: React.FC<OBOXProps> = ({ offers, makeOffer }) => {
               type="number"
               id="baseAmount"
               placeholder="Enter Base Amount"
-              value={baseAmount}
-              onChange={(e) => setBaseAmount(Number(e.target.value))}
+              value={formatEther(baseAmount)}
+              onChange={(e) => setBaseAmount(parseEther(e.target.value))}
               className="w-full p-2 border rounded"
             />
           </div>
@@ -188,8 +189,8 @@ const OBOX: React.FC<OBOXProps> = ({ offers, makeOffer }) => {
               type="number"
               id="price"
               placeholder="Enter Price"
-              value={price}
-              onChange={(e) => setPrice(Number(e.target.value))}
+              value={formatEther(price)}
+              onChange={(e) => setPrice(parseEther(e.target.value))}
               className="w-full p-2 border rounded"
             />
           </div>
@@ -245,10 +246,10 @@ const OBOXUI: NextPage = () => {
   const [offers, setOffers] = useState<Offer[]>(mockOffers);
   const [oboxConversation, setOboxConversation] = useState<Conversation | null>(null);
 
-  const makeOffer = (buyOrSell: boolean, maxBaseAmount: number, price: number) => {
+  const makeOffer = (buyOrSell: boolean, maxBaseAmount: bigint, price: bigint) => {
     const nonce = Math.floor(Date.now() / 1000);
 
-    oboxConversation?.send(`offer ${buyOrSell ? 'buy' : 'sell'} ${maxBaseAmount} ${price} ${nonce} 0x123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef01`);
+    oboxConversation?.send(`offer ${buyOrSell ? 'buy' : 'sell'} ${maxBaseAmount.toString()} ${price.toString()} ${nonce} 0x123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef01`);
   }
 
   useEffect(() => {
