@@ -2613,6 +2613,7 @@ __metadata:
     react-dom: ^18.2.0
     react-fast-marquee: ^1.3.5
     react-hot-toast: ^2.4.0
+    react-toastify: ^9.1.3
     rxjs: ^7.8.1
     tailwindcss: ^3.3.3
     typescript: ^5.1.6
@@ -5107,7 +5108,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xmtp/xmtp-js@npm:^11.2.0":
+"@xmtp/xmtp-js@npm:^11.0.0, @xmtp/xmtp-js@npm:^11.2.0":
   version: 11.2.0
   resolution: "@xmtp/xmtp-js@npm:11.2.0"
   dependencies:
@@ -7264,7 +7265,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clsx@npm:^1.1.0":
+"clsx@npm:^1.1.0, clsx@npm:^1.1.1":
   version: 1.2.1
   resolution: "clsx@npm:1.2.1"
   checksum: 30befca8019b2eb7dbad38cff6266cf543091dae2825c856a62a8ccf2c3ab9c2907c4d12b288b73101196767f66812365400a227581484a05f968b0307cfaf12
@@ -12807,6 +12808,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"iteracer@npm:^0.0.5":
+  version: 0.0.5
+  resolution: "iteracer@npm:0.0.5"
+  checksum: 0317208a4335d55ace5ab1e68f5faada93ca00fc46e1971f9eb46e0a03a339f48c181c72777aa1ff7a7c25cc17c573d931edbf11899d9c046e87701923f12569
+  languageName: node
+  linkType: hard
+
 "javascript-natural-sort@npm:0.7.1":
   version: 0.7.1
   resolution: "javascript-natural-sort@npm:0.7.1"
@@ -16925,6 +16933,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-toastify@npm:^9.1.3":
+  version: 9.1.3
+  resolution: "react-toastify@npm:9.1.3"
+  dependencies:
+    clsx: ^1.1.1
+  peerDependencies:
+    react: ">=16"
+    react-dom: ">=16"
+  checksum: e8bd92c5cbf831b43a042644ab9bc69abe6ceb3ce91ba71f5cd2d8b6a2c9885ca52770e1f1ba64c5632607f6df962db344a26c7fba57606faf5aa0e7bfc8535f
+  languageName: node
+  linkType: hard
+
 "react@npm:^18.2.0":
   version: 18.2.0
   resolution: "react@npm:18.2.0"
@@ -19702,6 +19722,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:^5.2.2":
+  version: 5.2.2
+  resolution: "typescript@npm:5.2.2"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 7912821dac4d962d315c36800fe387cdc0a6298dba7ec171b350b4a6e988b51d7b8f051317786db1094bd7431d526b648aba7da8236607febb26cf5b871d2d3c
+  languageName: node
+  linkType: hard
+
 "typescript@patch:typescript@4.3.4#~builtin<compat/typescript>":
   version: 4.3.4
   resolution: "typescript@patch:typescript@npm%3A4.3.4#~builtin<compat/typescript>::version=4.3.4&hash=a1c5e5"
@@ -19719,6 +19749,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 21e88b0a0c0226f9cb9fd25b9626fb05b4c0f3fddac521844a13e1f30beb8f14e90bd409a9ac43c812c5946d714d6e0dee12d5d02dfc1c562c5aacfa1f49b606
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@^5.2.2#~builtin<compat/typescript>":
+  version: 5.2.2
+  resolution: "typescript@patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=a1c5e5"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 07106822b4305de3f22835cbba949a2b35451cad50888759b6818421290ff95d522b38ef7919e70fb381c5fe9c1c643d7dea22c8b31652a717ddbd57b7f4d554
   languageName: node
   linkType: hard
 
@@ -21796,6 +21836,26 @@ __metadata:
   checksum: c891cf0d7884b4f5cce835aa01f1965727cd352cbd2d7a2e0605bf11ec99ae2198364cca54656ec8b2581a5704dee6c2bf9911922a0ff2a71b613455d32e81b7
   languageName: node
   linkType: hard
+
+"xmtp-bot-cli@npm:^0.0.5":
+  version: 0.0.5
+  resolution: "xmtp-bot-cli@npm:0.0.5"
+  dependencies:
+    "@xmtp/xmtp-js": ^11.0.0
+    iteracer: ^0.0.5
+  checksum: 99a4b16ebbaabb7a355ab5511b47422e7b2e4f4ed062b099e8aadf95f89c543bb36b8e9df2eced752f27939d4e134b73ddf1e0995bb8e8abad9537f1c9231036
+  languageName: node
+  linkType: hard
+
+"xmtp@workspace:packages/xmtp":
+  version: 0.0.0-use.local
+  resolution: "xmtp@workspace:packages/xmtp"
+  dependencies:
+    "@xmtp/xmtp-js": ^11.2.0
+    typescript: ^5.2.2
+    xmtp-bot-cli: ^0.0.5
+  languageName: unknown
+  linkType: soft
 
 "xtend@npm:^4.0.0, xtend@npm:^4.0.1, xtend@npm:^4.0.2, xtend@npm:~4.0.0":
   version: 4.0.2
