@@ -144,7 +144,7 @@ const OBOX: React.FC<OBOXProps> = ({ offers, makeOffer }) => {
   const [price, setPrice] = useState<bigint>(parseEther('4.20'));
   const [buyOrSell, setBuyOrSell] = useState<string>('buy');
 
-  const { data: Consignment, isLoading } = useDeployedContractInfo("Consignment");
+  const { data: Consignment, isLoading: isConsignmentLoading } = useDeployedContractInfo("Consignment");
   const handleMakeOffer = () => {
     if (buyOrSell === 'buy') {
       makeOffer(true, baseAmount, price);
@@ -154,19 +154,86 @@ const OBOX: React.FC<OBOXProps> = ({ offers, makeOffer }) => {
   };
   const { data: walletClient } = useWalletClient({ chainId: 80001 });
 
-  // const { writeAsync, isLoading } = useScaffoldContractWrite({
-  //   contractName: "Consignment",
-  //   functionName: 'takeOffer',
-  //   args: [
-  //     tokenWeights.map((tokenWeight) => tokenWeight.address) as string[],
-  //     tokenWeights.map((tokenWeight) => tokenWeight.weight) as number[],
-  //     basketName,
-  //     basketSymbol,
-  //   ],
-  //   onBlockConfirmation: (txnReceipt: any) => {
-  //     console.log("📦 Transaction blockHash", txnReceipt.blockHash);
-  //   },
-  // });
+
+  const { writeAsync: depositBaseWriteAsync, isLoading: xdb } = useScaffoldContractWrite({
+    contractName: "Consignment",
+    functionName: 'depositBase',
+    args: [
+      parseEther('1')
+    ],
+    onBlockConfirmation: (txnReceipt: any) => {
+      console.log("📦 Transaction blockHash", txnReceipt.blockHash);
+    },
+  });
+  const handleDepositBaseToConsignment = () => {
+    console.log('Deposit Base to Consignment');
+    depositBaseWriteAsync();
+  };
+
+  const { writeAsync: approveBaseWriteAsync, isLoading: xab } = useScaffoldContractWrite({
+    contractName: "LongBread",
+    functionName: 'approve',
+    args: [
+      !isConsignmentLoading ? Consignment.address : '0x3b73f3CE95CBd29cad98E4fAe991F120C82E39af',
+      1337000000000000000000n * 10000n,
+    ],
+    onBlockConfirmation: (txnReceipt: any) => {
+      console.log("📦 Transaction blockHash", txnReceipt.blockHash);
+    },
+  });
+  const handleApproveBaseToConsignment = () => {
+    console.log('Approving base to Consignment');
+    approveBaseWriteAsync();
+  };
+
+  const { writeAsync: approveQuoteWriteAsync, isLoading: x } = useScaffoldContractWrite({
+    contractName: "LongButter",
+    functionName: 'approve',
+    args: [
+      !isConsignmentLoading ? Consignment.address : '0x3b73f3CE95CBd29cad98E4fAe991F120C82E39af',
+      1337000000000000000000n * 10000n,
+    ],
+    onBlockConfirmation: (txnReceipt: any) => {
+      console.log("📦 Transaction blockHash", txnReceipt.blockHash);
+    },
+  });
+  const handleApproveQuoteToConsignment = () => {
+    console.log('Approving quote to Consignment');
+    approveQuoteWriteAsync();
+  };
+
+  const { writeAsync: depositQuoteWriteAsync, isLoading: xdq } = useScaffoldContractWrite({
+    contractName: "Consignment",
+    functionName: 'depositQuote',
+    args: [
+      parseEther('1')
+    ],
+    onBlockConfirmation: (txnReceipt: any) => {
+      console.log("📦 Transaction blockHash", txnReceipt.blockHash);
+    },
+  });
+  const handleDepositQuoteToConsignment = () => {
+    console.log('Depositing quote to Consignment');
+    depositQuoteWriteAsync();
+  };
+
+
+  const { writeAsync: takeOfferWriteAsync, isLoading } = useScaffoldContractWrite({
+    contractName: "Consignment",
+    functionName: 'takeOffer',
+    args: [
+      // Consignment.address, // 0x3b73f3CE95CBd29cad98E4fAe991F120C82E39af
+      true,
+      1337000000000000000000n,
+      500000000000000000n,
+      1697981717n,
+      '0x06a6ed21802a81bfd571e52f32f09619fa33f7dcbbf7a1a15a3740abc84586cd465996c0e967ae5024f1254431528fa3eb84829011e76d2e5a1cbad2260a2f841b',
+      1337000000000000000000n / 10000n,
+    ],
+    onBlockConfirmation: (txnReceipt: any) => {
+      console.log("📦 Transaction blockHash", txnReceipt.blockHash);
+    },
+  });
   const handleTakeOffer = (id: number) => {
     console.log(`Taking offer with id ${id}`);
     const buyOrSell = true; // 'true' for buy
@@ -174,36 +241,10 @@ const OBOX: React.FC<OBOXProps> = ({ offers, makeOffer }) => {
     const price = parseEther("1");
     const nonce = BigInt(Math.floor(Date.now() / 1000));
     const amount = parseEther("1");
-
-    if (!walletClient) {
-      debugger
-      return;
-    }
-
-    // // Construct the message
-    // const messageHash = keccak256(encodePacked(
-    //   ["address", "bool", "uint256", "uint256", "uint256"],
-    //   [Consignment.address, buyOrSell, maxAmount, price, nonce]
-    // ));
-    // if (!walletClient) {
-    //   debugger
-    //   return;
-    // }
-    // (async () => {
-    //   const signature = await walletClient.signMessage({
-    //     // walletClient
-    //     message: messageHash,
-    //   })
-    //   console.log(signature);
-    // })();
-    // let messageHashBinary = hre.ethers.utils.arrayify(messageHash);
-    // const signature = await offerer.signMessage(messageHashBinary);
+    const sig = '0x66dc7fec993dce8c9f8e8832dd05468da6d6fb4dbee2b5ad4c908fa9a97bca171c138bdc65603b2113825e534d7431a9fb1c103c864ae9abf4e91fe256061f9d1c';
 
     // const tx = await takerConsignment.takeOffer(buyOrSell, maxAmount, price, nonce, signature, amount);
-  };
-
-  const handleDepositToConsignment = () => {
-    // Logic for depositing to consignment
+    takeOfferWriteAsync();
   };
 
 
@@ -253,17 +294,41 @@ const OBOX: React.FC<OBOXProps> = ({ offers, makeOffer }) => {
           <button
             type="button"
             onClick={handleMakeOffer}
-            className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700"
+            className="bg-blue-500 text-white p-2 m-2 rounded hover:bg-blue-700"
           >
             Make Offer
           </button>
 
           <button
             type="button"
-            onClick={handleDepositToConsignment}
-            className="bg-green-500 text-white p-2 rounded hover-bg-green-700"
+            onClick={handleApproveBaseToConsignment}
+            className="bg-green-500 text-white p-2 m-2 rounded hover-bg-green-700"
           >
-            Deposit to Consignment
+            Approve Base
+          </button>
+
+          <button
+            type="button"
+            onClick={handleDepositBaseToConsignment}
+            className="bg-green-500 text-white p-2 m-2 rounded hover-bg-green-700"
+          >
+            Deposit Base to Consignment
+          </button>
+
+          <button
+            type="button"
+            onClick={handleApproveQuoteToConsignment}
+            className="bg-green-500 text-white p-2 m-2 rounded hover-bg-green-700"
+          >
+            Approve Quote
+          </button>
+
+          <button
+            type="button"
+            onClick={handleDepositQuoteToConsignment}
+            className="bg-green-500 text-white p-2 m-2 rounded hover-bg-green-700"
+          >
+            Deposit Quote to Consignment
           </button>
         </form>
       </div>
@@ -306,6 +371,19 @@ async function signOfferWithWallet(walletClient: WalletClient, address: string, 
     ["address", "bool", "uint256", "uint256", "uint256"],
     [address, buyOrSell, maxAmount, price, nonce]
   ));
+  console.log('signed address: ', address);
+  console.log('signed buyOrSell: ', buyOrSell);
+  console.log('signed maxAmount: ', maxAmount);
+  console.log('signed price: ', price);
+  console.log('signed nonce: ', nonce);
+  console.log(messageHash);
+  // signed address: 0x3b73f3CE95CBd29cad98E4fAe991F120C82E39af
+  // signed buyOrSell: true
+  // signed maxAmount: 1337000000000000000000n
+  // signed price: 500000000000000000n
+  // signed nonce: 1697981717n
+  // 0x7acfefc842eabca8c5c73c26870ce272b127b6c5e8511bf8d9b3b40d94ed6433
+  // 0x06a6ed21802a81bfd571e52f32f09619fa33f7dcbbf7a1a15a3740abc84586cd465996c0e967ae5024f1254431528fa3eb84829011e76d2e5a1cbad2260a2f841b
 
   if (!walletClient) {
     debugger;
@@ -338,7 +416,7 @@ const OBOXUI: NextPage = () => {
 
     signOfferWithWallet(walletClient as WalletClient, Consignment.address, buyOrSell, maxBaseAmount, price, BigInt(nonce)).then((signature) => {
       console.log(signature);
-      debugger;
+      // debugger;
       oboxConversation?.send(`offer ${buyOrSell ? 'buy' : 'sell'} ${maxBaseAmount.toString()} ${price.toString()} ${nonce} ${signature}`);
     })
   }
