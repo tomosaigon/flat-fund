@@ -3,7 +3,7 @@ import { MetaHeader } from "~~/components/MetaHeader";
 import { ContractData } from "~~/components/example-ui/ContractData";
 import { ContractInteraction } from "~~/components/example-ui/ContractInteraction";
 import { Wallet } from "ethers";
-import { Client } from "@xmtp/xmtp-js";
+import { Client, Conversation } from "@xmtp/xmtp-js";
 import React, { useState, useEffect } from "react";
 import { toast } from 'react-toastify';
 
@@ -131,15 +131,21 @@ const mockOffers = [
 
 interface OBOXProps {
   offers: Offer[];
+  makeOffer: (buyOrSell: boolean, maxBaseAmount: number, price: number) => void;
 }
 
-const OBOX: React.FC<OBOXProps> = ({ offers }) => {
+const OBOX: React.FC<OBOXProps> = ({ offers, makeOffer }) => {
   const [baseAmount, setBaseAmount] = useState<number>(0);
   const [quoteAmount, setQuoteAmount] = useState<number>(0);
   const [price, setPrice] = useState<number>(0);
   const [buyOrSell, setBuyOrSell] = useState<string>('');
 
-  const handleClick = () => {
+  const handleMakeOffer = () => {
+    if (buyOrSell === 'buy') {
+      makeOffer(true, baseAmount, price);
+    } else if (buyOrSell === 'sell') {
+      makeOffer(false, baseAmount, price);
+    }
   };
   const handleTakeOffer = (id: number) => {
     console.log(`Taking offer with id ${id}`);
@@ -191,10 +197,10 @@ const OBOX: React.FC<OBOXProps> = ({ offers }) => {
 
           <button
             type="button"
-            onClick={handleClick}
+            onClick={handleMakeOffer}
             className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700"
           >
-            Submit
+            Make Offer
           </button>
         </form>
       </div>
@@ -237,6 +243,13 @@ const OBOXUI: NextPage = () => {
   const [wallet, setWallet] = useState<Wallet>();
   const [address, setAddress] = useState<string>();
   const [offers, setOffers] = useState<Offer[]>(mockOffers);
+  const [oboxConversation, setOboxConversation] = useState<Conversation | null>(null);
+
+  const makeOffer = (buyOrSell: boolean, maxBaseAmount: number, price: number) => {
+    const nonce = Math.floor(Date.now() / 1000);
+
+    oboxConversation?.send(`offer ${buyOrSell ? 'buy' : 'sell'} ${maxBaseAmount} ${price} ${nonce} 0x123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef01`);
+  }
 
   useEffect(() => {
     (async () => {
@@ -262,11 +275,12 @@ const OBOXUI: NextPage = () => {
       console.log("Can message: " + isOnProdNetwork);
       const conversation = await xmtp.conversations.newConversation(oboxAddr);
       console.log("Conversation created", conversation);
+      setOboxConversation(conversation);
       // const message = await conversation.send("gm");
       const message = await conversation.send("subscribe");
       console.log("Message sent", message);
       // debugger;
-      const seenMessages: Record<string, boolean> = {}; 
+      const seenMessages: Record<string, boolean> = {};
       for await (const message of await xmtp.conversations.streamAllMessages()) {
         if (seenMessages[message.id]) {
           console.log(`Message with ID ${message.id} has already been seen.`);
@@ -378,7 +392,7 @@ const OBOXUI: NextPage = () => {
         </div>
       </div>
       <div className="grid lg:grid-cols-2 flex-grow" data-theme="exampleUi">
-        <OBOX offers={offers}/>
+        <OBOX offers={offers} makeOffer={makeOffer} />
       </div>
     </>
   );
