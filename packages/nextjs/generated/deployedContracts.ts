@@ -1,7 +1,7 @@
 const contracts = {
-  8001: [
+  8000: [
     {
-      chainId: "8001",
+      chainId: "8000",
       name: "localhost",
       contracts: {
         LongBread: {
@@ -705,7 +705,7 @@ const contracts = {
           ],
         },
         MockPair: {
-          address: "0x7891D7Ff8A9bAf4091b3a39A835A03642B1018F3",
+          address: "0xE5c882f78f09356f9DdBD775C17413b36ecC9223",
           abi: [
             {
               inputs: [
@@ -769,13 +769,172 @@ const contracts = {
             },
           ],
         },
+        MockPairButter: {
+          address: "0xDb6a3c8647Ce00111dE234BcaA5068D9e2b89ce0",
+          abi: [
+            {
+              inputs: [
+                {
+                  internalType: "string",
+                  name: "_pairName",
+                  type: "string",
+                },
+                {
+                  internalType: "address",
+                  name: "_longToken",
+                  type: "address",
+                },
+                {
+                  internalType: "address",
+                  name: "_shortToken",
+                  type: "address",
+                },
+              ],
+              stateMutability: "nonpayable",
+              type: "constructor",
+            },
+            {
+              inputs: [],
+              name: "longToken",
+              outputs: [
+                {
+                  internalType: "address",
+                  name: "",
+                  type: "address",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [],
+              name: "pairName",
+              outputs: [
+                {
+                  internalType: "string",
+                  name: "",
+                  type: "string",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [],
+              name: "shortToken",
+              outputs: [
+                {
+                  internalType: "address",
+                  name: "",
+                  type: "address",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+          ],
+        },
+        MultiAssetWeightedVaultFactory: {
+          address: "0x667198a7e4Add825408e80313629323976Ab3054",
+          abi: [
+            {
+              inputs: [
+                {
+                  internalType: "contract ERC20[]",
+                  name: "multiAssets",
+                  type: "address[]",
+                },
+                {
+                  internalType: "uint16[]",
+                  name: "multiAssetWeights",
+                  type: "uint16[]",
+                },
+                {
+                  internalType: "string",
+                  name: "name",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "symbol",
+                  type: "string",
+                },
+              ],
+              name: "createVault",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint256",
+                  name: "",
+                  type: "uint256",
+                },
+              ],
+              name: "deployedVaults",
+              outputs: [
+                {
+                  internalType: "address",
+                  name: "",
+                  type: "address",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "string",
+                  name: "name",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "symbol",
+                  type: "string",
+                },
+              ],
+              name: "foo",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [],
+              name: "getDeployedVaults",
+              outputs: [
+                {
+                  internalType: "address[]",
+                  name: "",
+                  type: "address[]",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+          ],
+        },
         PipRegistry: {
-          address: "0x3626F75919aCf33bE53A17177a26a61EA39eB554",
+          address: "0x1Ef6B04020aA2c337785b197f59F56bB454511B0",
           abi: [
             {
               inputs: [],
               stateMutability: "nonpayable",
               type: "constructor",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint256",
+                  name: "chainid",
+                  type: "uint256",
+                },
+              ],
+              name: "ChainNotSupported",
+              type: "error",
             },
             {
               anonymous: false,
@@ -842,6 +1001,19 @@ const contracts = {
               type: "event",
             },
             {
+              inputs: [],
+              name: "_tableId",
+              outputs: [
+                {
+                  internalType: "uint256",
+                  name: "",
+                  type: "uint256",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
               inputs: [
                 {
                   internalType: "address",
@@ -887,6 +1059,50 @@ const contracts = {
               type: "function",
             },
             {
+              inputs: [
+                {
+                  internalType: "address",
+                  name: "newAddress",
+                  type: "address",
+                },
+              ],
+              name: "insert",
+              outputs: [],
+              stateMutability: "payable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint32",
+                  name: "id",
+                  type: "uint32",
+                },
+                {
+                  internalType: "address",
+                  name: "newAddress",
+                  type: "address",
+                },
+              ],
+              name: "insertId",
+              outputs: [],
+              stateMutability: "payable",
+              type: "function",
+            },
+            {
+              inputs: [],
+              name: "insertingPaused",
+              outputs: [
+                {
+                  internalType: "bool",
+                  name: "",
+                  type: "bool",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
               inputs: [],
               name: "owner",
               outputs: [
@@ -902,6 +1118,13 @@ const contracts = {
             {
               inputs: [],
               name: "pauseContract",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [],
+              name: "pauseInserting",
               outputs: [],
               stateMutability: "nonpayable",
               type: "function",
@@ -942,6 +1165,13 @@ const contracts = {
             {
               inputs: [],
               name: "unpauseContract",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [],
+              name: "unpauseInserting",
               outputs: [],
               stateMutability: "nonpayable",
               type: "function",
@@ -1991,7 +2221,7 @@ const contracts = {
           ],
         },
         MockPair: {
-          address: "0x9820E0447e7633d765c4AcD583ef94D0eB1dc23f",
+          address: "0x8F5a5B5b9342CF19D1216DCa6a267DD5793a6a02",
           abi: [
             {
               inputs: [
@@ -2055,8 +2285,156 @@ const contracts = {
             },
           ],
         },
+        MockPairButter: {
+          address: "0x08c2023B14A58bF208C4D1E4f423CEe459a15Ccf",
+          abi: [
+            {
+              inputs: [
+                {
+                  internalType: "string",
+                  name: "_pairName",
+                  type: "string",
+                },
+                {
+                  internalType: "address",
+                  name: "_longToken",
+                  type: "address",
+                },
+                {
+                  internalType: "address",
+                  name: "_shortToken",
+                  type: "address",
+                },
+              ],
+              stateMutability: "nonpayable",
+              type: "constructor",
+            },
+            {
+              inputs: [],
+              name: "longToken",
+              outputs: [
+                {
+                  internalType: "address",
+                  name: "",
+                  type: "address",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [],
+              name: "pairName",
+              outputs: [
+                {
+                  internalType: "string",
+                  name: "",
+                  type: "string",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [],
+              name: "shortToken",
+              outputs: [
+                {
+                  internalType: "address",
+                  name: "",
+                  type: "address",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+          ],
+        },
+        MultiAssetWeightedVaultFactory: {
+          address: "0x768F26A9aa69AF5fEee5A7260748A936833165E1",
+          abi: [
+            {
+              inputs: [
+                {
+                  internalType: "contract ERC20[]",
+                  name: "multiAssets",
+                  type: "address[]",
+                },
+                {
+                  internalType: "uint16[]",
+                  name: "multiAssetWeights",
+                  type: "uint16[]",
+                },
+                {
+                  internalType: "string",
+                  name: "name",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "symbol",
+                  type: "string",
+                },
+              ],
+              name: "createVault",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint256",
+                  name: "",
+                  type: "uint256",
+                },
+              ],
+              name: "deployedVaults",
+              outputs: [
+                {
+                  internalType: "address",
+                  name: "",
+                  type: "address",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "string",
+                  name: "name",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "symbol",
+                  type: "string",
+                },
+              ],
+              name: "foo",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [],
+              name: "getDeployedVaults",
+              outputs: [
+                {
+                  internalType: "address[]",
+                  name: "",
+                  type: "address[]",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+          ],
+        },
         PipRegistry: {
-          address: "0x827c842f86aFa39e5E1f3e18e0180817a089aca4",
+          address: "0xf7c9805cD92c119D74265906300985d9EEA312Ce",
           abi: [
             {
               inputs: [],
@@ -2229,6 +2607,19 @@ const contracts = {
             },
             {
               inputs: [],
+              name: "insertingPaused",
+              outputs: [
+                {
+                  internalType: "bool",
+                  name: "",
+                  type: "bool",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [],
               name: "owner",
               outputs: [
                 {
@@ -2243,6 +2634,13 @@ const contracts = {
             {
               inputs: [],
               name: "pauseContract",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [],
+              name: "pauseInserting",
               outputs: [],
               stateMutability: "nonpayable",
               type: "function",
@@ -2283,6 +2681,13 @@ const contracts = {
             {
               inputs: [],
               name: "unpauseContract",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [],
+              name: "unpauseInserting",
               outputs: [],
               stateMutability: "nonpayable",
               type: "function",

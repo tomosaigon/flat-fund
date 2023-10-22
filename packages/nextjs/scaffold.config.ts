@@ -18,8 +18,8 @@ const scaffoldConfig = {
   //   return chains.polygonMumbai 
   // })(),
   // The network where your DApp lives in
-  targetNetwork: { ...chains.hardhat, id: 80001 },
-  // targetNetwork: chains.polygonMumbai,
+  // targetNetwork: { ...chains.hardhat, id: 80001 },
+  targetNetwork: chains.polygonMumbai,
 
   // The interval at which your front-end polls the RPC servers for new data
   // it has no effect on the local network

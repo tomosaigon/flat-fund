@@ -4,9 +4,11 @@ import React, { useEffect, useState } from 'react';
 import { usePublicClient } from "wagmi";
 import scaffoldConfig from "~~/scaffold.config";
 import { Contract, ContractCodeStatus, ContractName, contracts } from "~~/utils/scaffold-eth/contract";
-import { useDeployedContractInfo, useNetworkColor } from "~~/hooks/scaffold-eth";
+import { useDeployedContractInfo, useScaffoldContractWrite, useNetworkColor } from "~~/hooks/scaffold-eth";
 import { useContractWrite, usePrepareContractWrite, useContractRead, useNetwork } from "wagmi";
 import * as LongShortPair from "../node_modules/@uma/core/artifacts/contracts/financial-templates/long-short-pair/LongShortPair.sol/LongShortPair.json";
+import { polygonMumbai } from 'viem/chains';
+import { createPublicClient, createWalletClient, http, custom, ReadContractParameters } from 'viem';
 
 const ERC20abi = [{ "inputs": [{ "internalType": "string", "name": "name", "type": "string" }, { "internalType": "string", "name": "symbol", "type": "string" }, { "internalType": "uint8", "name": "decimals", "type": "uint8" }], "stateMutability": "nonpayable", "type": "constructor" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "owner", "type": "address" }, { "indexed": true, "internalType": "address", "name": "spender", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "value", "type": "uint256" }], "name": "Approval", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "from", "type": "address" }, { "indexed": true, "internalType": "address", "name": "to", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "value", "type": "uint256" }], "name": "Transfer", "type": "event" }, { "inputs": [{ "internalType": "address", "name": "owner", "type": "address" }, { "internalType": "address", "name": "spender", "type": "address" }], "name": "allowance", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "approve", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "account", "type": "address" }], "name": "balanceOf", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "decimals", "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "subtractedValue", "type": "uint256" }], "name": "decreaseAllowance", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "addedValue", "type": "uint256" }], "name": "increaseAllowance", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "value", "type": "uint256" }], "name": "mint", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "name", "outputs": [{ "internalType": "string", "name": "", "type": "string" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "symbol", "outputs": [{ "internalType": "string", "name": "", "type": "string" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "totalSupply", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "transfer", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "sender", "type": "address" }, { "internalType": "address", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "transferFrom", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "nonpayable", "type": "function" }];
 
@@ -26,10 +28,11 @@ function TokenFetchingComponent({
 
   useEffect(() => {
     if (deployedContractLoading) return;
+    if (deployedContractData === undefined) return;
     // PipRegistry
     const fetchData = async () => {
-      let _addresses = [];
-      let _names = [];
+      let _addresses = [] as string[];
+      let _names = [] as string[];
       const whitelistLength = await publicClient.readContract({
         address: deployedContractData.address,
         abi: deployedContractData.abi,
@@ -42,7 +45,7 @@ function TokenFetchingComponent({
         return;
       }
       // loop through whitelist
-      for (let i = 1; i < whitelistLength; i++) {
+      for (let i = 0; i < whitelistLength; i++) {
         const lastPipAddress = await publicClient.readContract({
           address: deployedContractData.address,
           abi: deployedContractData.abi,
@@ -86,8 +89,10 @@ function TokenFetchingComponent({
           functionName: 'symbol',
           args: []
         })
-        _addresses.push(longToken);
-        _names.push(longName);
+        if (!_addresses.includes(longToken)) {
+          _addresses.push(longToken);
+          _names.push(longName);
+        }
         // debugger
       }
       setTokenAddresses(_addresses);
@@ -132,7 +137,7 @@ const tokenData = [
   {
     name: "WETH",
     // name: "Ethereum",
-    address: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+    address: "0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41",
   },
   {
     name: "WBTC",
@@ -142,12 +147,14 @@ const tokenData = [
   {
     name: "USDT",
     // name: "Tether",
-    address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+    address: "0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41",
   },
 ];
 
-const DefineMawv: React.FC<{}> = ({ }) => {
-  // const DefineMawv: React.FC<{ tokens: Token[] }> = ({ tokens }) => {
+const DefineMawv: React.FC<{ contractMultiAssetWeightedVaultFactory: any }> = ({ contractMultiAssetWeightedVaultFactory }) => {
+  const [basketName, setBasketName] = useState('Food Basket 1123');
+  const [basketSymbol, setBasketSymbol] = useState('fl_tFOOD1123');
+
   const [tokenAddresses, setTokenAddresses] = useState([] as string[]);
   const [tokenNames, setTokenNames] = useState([] as string[]);
   const [selectedToken, setSelectedToken] = useState<Token | null>(null);
@@ -157,6 +164,94 @@ const DefineMawv: React.FC<{}> = ({ }) => {
 
   const tokens = tokenData.concat(tokenNames
     .map((name, index) => ({ name, address: tokenAddresses[index] })));
+
+  console.log('tokens', contractMultiAssetWeightedVaultFactory.address);
+  console.log('tokens', tokenWeights.map((tokenWeight) => tokenWeight.address));
+
+  const { chain, chains } = useNetwork();
+  const publicClient = usePublicClient({ chainId: scaffoldConfig.targetNetwork.id });
+  // const publicClient = createPublicClient({
+  //   chain: polygonMumbai,
+  //   transport: http('https://rpc-mumbai.maticvigil.com/v1'),
+  // })
+  // const publicClient = usePublicClient({ chainId: chain.chainId });
+  useEffect(() => {
+    if (tokenWeights.length == 0) return;
+    (async () => {
+      const { request } = await publicClient.simulateContract({
+        address: contractMultiAssetWeightedVaultFactory.address,
+        abi: contractMultiAssetWeightedVaultFactory.abi,
+    // functionName: 'foo',
+        functionName: 'createVault',
+        args: [
+          tokenWeights.map((tokenWeight) => tokenWeight.address) as string[],
+          tokenWeights.map((tokenWeight) => tokenWeight.weight) as number[],
+          basketName,
+          basketSymbol,
+        ],
+      })
+      console.log("simulateContract request", request);
+    })();
+
+  }, [tokenWeights, basketName, basketSymbol]);
+
+  // const { config } = usePrepareContractWrite({
+  //   address: contractMultiAssetWeightedVaultFactory.address,
+  //   abi: contractMultiAssetWeightedVaultFactory.abi,
+  //   // functionName: 'createVault',
+  //   functionName: 'foo',
+  //   args: [
+  //     // tokenWeights.map((tokenWeight) => tokenWeight.address) as string[],
+  //     // tokenWeights.map((tokenWeight) => tokenWeight.weight) as number[],
+  //     basketName,
+  //     basketSymbol,
+  //   ],
+  //   onSettled(data, error) {
+  //     console.log('Settled', { data, error });
+  //     if (error === null && data?.result) {
+  //       if (data.mode === 'prepared') {
+  //         // if (data.mode === 'prepared' && data.request.blockNumber === undefined) {
+  //         console.log('Waiting for tx to be confirmed');
+  //         // return;
+  //       }
+  //       console.log('Transaction confirmed');
+  //     }
+  //   },
+  // })
+  // console.log('config', config);
+  // const { data, isLoading, isSuccess, write } = useContractWrite(config)
+  // const { data, isLoading, isSuccess, write } = useContractWrite({
+  //   chainId: scaffoldConfig.targetNetwork.id,
+  //   address: contractMultiAssetWeightedVaultFactory.address,
+  //   abi: contractMultiAssetWeightedVaultFactory.abi,
+  //   functionName: 'foo',
+  //   // functionName: 'createVault',
+  //   args: [
+  //     // tokenWeights.map((tokenWeight) => tokenWeight.address) as string[],
+  //     // tokenWeights.map((tokenWeight) => tokenWeight.weight) as number[],
+  //     basketName,
+  //     basketSymbol,
+  //   ],
+  //   onSettled(data, error) {
+  //     console.log('Settled', { data, error });
+  //       // console.log('Transaction confirmed');
+  //   },
+  // })
+
+  const { writeAsync, isLoading } = useScaffoldContractWrite({
+    contractName: "MultiAssetWeightedVaultFactory",
+    functionName: 'foo',
+    // functionName: 'createVault',
+    args: [
+      // tokenWeights.map((tokenWeight) => tokenWeight.address) as string[],
+      // tokenWeights.map((tokenWeight) => tokenWeight.weight) as number[],
+      basketName,
+      basketSymbol,
+    ],
+    onBlockConfirmation: (txnReceipt: any) => {
+      console.log("📦 Transaction blockHash", txnReceipt.blockHash);
+    },
+  });
 
   const addTokenWeight = () => {
     if (weight >= 1 && weight <= 10000) {
@@ -178,9 +273,6 @@ const DefineMawv: React.FC<{}> = ({ }) => {
       }
     }
   };
-
-
-
   const calculateTotalWeight = () => {
     return tokenWeights.reduce((total, tokenWeight) => total + tokenWeight.weight, 0);
   };
@@ -189,8 +281,34 @@ const DefineMawv: React.FC<{}> = ({ }) => {
     <div className="p-4 space-y-4">
       <TokenFetchingComponent setTokenAddresses={setTokenAddresses} setTokenNames={setTokenNames} />
       <form className="space-y-2">
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="basketName">
+            Basket Name
+          </label>
+          <input
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="basketName"
+            type="text"
+            placeholder="Enter Basket Name"
+            value={basketName}
+            onChange={(e) => setBasketName(e.target.value)}
+          />
+        </div>
+        <div className="mb-6">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="basketSymbol">
+            Basket Symbol
+          </label>
+          <input
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="basketSymbol"
+            type="text"
+            placeholder="Enter Basket Symbol"
+            value={basketSymbol}
+            onChange={(e) => setBasketSymbol(e.target.value)}
+          />
+        </div>
         <div className="space-y-2">
-          <label className="block font-semibold">Select Token:</label>
+          <label className="block font-semibold">Select a price token to add to basket :</label>
           <select
             className="w-full border p-2"
             value={selectedToken?.name || ''}
@@ -251,13 +369,16 @@ const DefineMawv: React.FC<{}> = ({ }) => {
           className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700"
           onClick={addTokenWeight}
         >
-          Store Token & Weight
+          Add to your basket
         </button>
       </form>
 
 
 
       <div>
+        <h2 className="text-2xl text-blue-800 mb-4">
+          Your basket will have these weighted prices:
+        </h2>
         <table className="w-full border">
           <thead>
             <tr>
@@ -282,6 +403,12 @@ const DefineMawv: React.FC<{}> = ({ }) => {
 
       <button
         className="bg-green-500 text-white p-2 rounded hover:bg-green-700"
+        onClick={(e) => {
+          // if (write === undefined) return;
+          // write();
+          writeAsync();
+          e.preventDefault();
+        }}
       >
         Deploy Multi Asset Weighted Vault
       </button>
@@ -292,6 +419,7 @@ const DefineMawv: React.FC<{}> = ({ }) => {
 
 
 const BasketMaker: NextPage = () => {
+  const { data: contractMultiAssetWeightedVaultFactory, isLoading: deployedContractLoading } = useDeployedContractInfo('MultiAssetWeightedVaultFactory');
   return (
     <>
       <MetaHeader
@@ -312,7 +440,9 @@ const BasketMaker: NextPage = () => {
       </div>
       <div className="grid lg:grid-cols-2 flex-grow" data-theme="exampleUi">
         <div className="flex flex-col justify-center items-center">
-          <DefineMawv />
+          {deployedContractLoading ? 'Loading...' : (
+            <DefineMawv contractMultiAssetWeightedVaultFactory={contractMultiAssetWeightedVaultFactory} />
+          )}
         </div>
       </div>
     </>
