@@ -52,6 +52,11 @@ const config: HardhatUserConfig = {
       url: `https://eth-sepolia.g.alchemy.com/v2/${providerApiKey}`,
       accounts: [deployerPrivateKey],
     },
+    mantleTestnet: {
+      url: "https://rpc.testnet.mantle.xyz/",
+      chainId: 5001,
+      accounts: [deployerPrivateKey],
+    },
     goerli: {
       url: `https://eth-goerli.alchemyapi.io/v2/${providerApiKey}`,
       accounts: [deployerPrivateKey],

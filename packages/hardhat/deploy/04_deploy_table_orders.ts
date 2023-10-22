@@ -8,6 +8,7 @@ import { DeployFunction } from "hardhat-deploy/types";
  * @param hre HardhatRuntimeEnvironment object.
  */
 const deployTableOrders: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+    if (hre.network.name == 'scrollSepolia' || hre.network.name == 'mantleTestnet' || hre.network.name == 'filecoin-2') { return; }
     /*
       On localhost, the deployer account is the one that comes with Hardhat, which is already funded.
   

@@ -53,6 +53,8 @@ const deployLongBread: DeployFunction = async function (hre: HardhatRuntimeEnvir
     const LongBread = await hre.ethers.getContract("LongBread", deployer);
     // const LongButter = await hre.ethers.getContract("LongButter", deployer);
 
+    if (hre.network.name == 'scrollSepolia' || hre.network.name == 'mantleTestnet' || hre.network.name == 'filecoin-2') { return; }
+
     const signer = await hre.ethers.getSigner(deployer);
     const InterchainTokenService = new hre.ethers.Contract(InterchainTokenServiceAddress, InterchainTokenServiceABI, signer);
     const tmdAddr: string = await InterchainTokenService.tokenManagerDeployer();
@@ -121,8 +123,8 @@ const deployLongBread: DeployFunction = async function (hre: HardhatRuntimeEnvir
         // console.log("tokenId", tokenId ? tokenId : "no tokenId in " + tx.events);
         // // const tokenId = '0x3ef78f1388e080a8f97ec0423c3c0e184ed2266a3cbdda7d206aaa8491f7890e';
         const tokenId = '0x337bd684a3c1f77ae3ab0cd6941b7d035b988eaa50ac341658f553b392f7aa7d';
-        const remoteChains = [] as string[];
-        // const remoteChains =['mantle', 'polygon-zkevm', 'filecoin-2', 'scroll'];
+        // const remoteChains = [] as string[];
+        const remoteChains =['mantle', 'polygon-zkevm', 'filecoin-2', 'scroll'];
         for (const remoteChain of remoteChains) {
             const tx = await (await InterchainTokenService.deployRemoteCanonicalToken(tokenId, remoteChain, 0)).wait();
             console.log(tx.events)
@@ -153,7 +155,8 @@ const deployLongBread: DeployFunction = async function (hre: HardhatRuntimeEnvir
         // linea butter dest gas post-paid:
         // https://testnet.axelarscan.io/gmp/0x272ce3344302de6be2a59b717bb8bd423f3a101e4ce2c053179e713e2ca948f5
         // 5 butters mumbai -> linea: https://testnet.axelarscan.io/gmp/0x1d7964bd44a3ce9588b3c7380fce58b2058145315fb026311e0ad9820143b6da:25
-
+        // filecoin-2 https://testnet.axelarscan.io/gmp/0x008b437c69500686f63e12d65ed019ff017ca8e7fb582c2bf60c3e1f423c385a
+        // https://calibration.filfox.info/en/tx/0x244ff735ccf5c0d103345b10e8ecb467828ba0ed41365065ff740840fe338e90?t=1
 
         const AxelarGateway = new hre.ethers.Contract(AxelarGatewayAddress, AxelarGatewayABI, signer);
         console.log("minting 10 LongBread");
