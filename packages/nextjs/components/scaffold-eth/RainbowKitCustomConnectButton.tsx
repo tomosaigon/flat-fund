@@ -88,7 +88,7 @@ export const RainbowKitCustomConnectButton = () => {
                   <div className="flex flex-col items-center mr-1">
                     <Balance address={account.address} className="min-h-0 h-auto" />
                     <span className="text-xs" style={{ color: networkColor }}>
-                      {chain.name}
+                      {chain.name == 'Hardhat' ? '' : chain.name}
                     </span>
                   </div>
                   <div className="dropdown dropdown-end leading-3">
