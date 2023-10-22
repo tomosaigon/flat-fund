@@ -10,6 +10,7 @@ import { ERC20abi, mockContracts } from "../scripts/mockContracts";
  * @param hre HardhatRuntimeEnvironment object.
  */
 const deployConsignment: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+  // return; // don't
   /*
     On localhost, the deployer account is the one that comes with Hardhat, which is already funded.
  
@@ -24,9 +25,15 @@ const deployConsignment: DeployFunction = async function (hre: HardhatRuntimeEnv
   const signers = await hre.ethers.getSigners()
   const { deploy } = (hre as any).deployments;
 
-  const addresses = [mockContracts.MintableERC20Clone.address, mockContracts.MintableERC20Clone2.address];
+  const LongBread = await hre.ethers.getContract("LongBread", deployer);
+  const LongButter = await hre.ethers.getContract("LongButter", deployer);
+  // const addresses = [mockContracts.MintableERC20Clone.address, mockContracts.MintableERC20Clone2.address];
+  const addresses = [
+    LongBread.address,
+    LongButter.address
+  ];
   if (addresses[0] === "" || addresses[1] === "") {
-    console.log("Please deploy the MintableERC20Clone contract first");
+    console.log("Please deploy the MintableERC20Clone|base&quote contract first");
     return;
   }
 
@@ -40,22 +47,32 @@ const deployConsignment: DeployFunction = async function (hre: HardhatRuntimeEnv
     autoMine: true,
   });
 
+  // return;
+
   const offerer = await hre.ethers.getSigner(deployer);
   const taker = signers[1];
   const offererAddress = await offerer.getAddress();
   const takerAddress = await taker.getAddress();
-
+// debugger
   // Get the deployed contract
   const offerConsignment = await hre.ethers.getContract("Consignment", deployer);
   const consignmentAddress = offerConsignment.address;
   const takerConsignment = await hre.ethers.getContract("Consignment", taker);
-  const baseToken = new hre.ethers.Contract(addresses[0], ERC20abi, taker);
-  const quoteToken = new hre.ethers.Contract(addresses[1], ERC20abi, offerer);
-
-  await baseToken.mint(hre.ethers.utils.parseEther("20"));
+  // const baseToken = new hre.ethers.Contract(addresses[0], ERC20abi, taker);
+  const baseToken = await hre.ethers.getContract("LongBread", taker);
+  // const quoteToken = new hre.ethers.Contract(addresses[1], ERC20abi, offerer);
+  const quoteToken = await hre.ethers.getContract("LongButter", offerer);
+  const quoteTokenMinter = await hre.ethers.getContract("LongButter", deployer);
+  await quoteTokenMinter.mint(offererAddress, hre.ethers.utils.parseEther("20")); // LongBread mint ABI
+  const baseTokenMinter = await hre.ethers.getContract("LongBread", deployer);
+  await baseTokenMinter.mint(takerAddress, hre.ethers.utils.parseEther("20")); // LongBread mint ABI
+  // debugger
+  // await baseToken.mint(hre.ethers.utils.parseEther("20"));
+  // await baseToken.mint(deployer, hre.ethers.utils.parseEther("20")); // LongBread mint ABI
   await baseToken.approve(consignmentAddress, hre.ethers.utils.parseEther("20"));
   await takerConsignment.depositBase(hre.ethers.utils.parseEther("3"));
-  await quoteToken.mint(hre.ethers.utils.parseEther("20"));
+  // await quoteToken.mint(hre.ethers.utils.parseEther("20"));
+  // await quoteToken.mint(deployer, hre.ethers.utils.parseEther("20")); // LongBread mint ABI
   await quoteToken.approve(consignmentAddress, hre.ethers.utils.parseEther("20"));
   await offerConsignment.depositQuote(hre.ethers.utils.parseEther("4"));
   await takerConsignment.withdrawBase(hre.ethers.utils.parseEther("1"));
@@ -70,7 +87,7 @@ const deployConsignment: DeployFunction = async function (hre: HardhatRuntimeEnv
   const buyOrSell = true; // 'true' for buy
   const maxAmount = hre.ethers.utils.parseEther("2");
   const price = hre.ethers.utils.parseEther("1");
-  const nonce = 1;
+  const nonce = 2;
   const amount = hre.ethers.utils.parseEther("1");
 
   // Construct the message
