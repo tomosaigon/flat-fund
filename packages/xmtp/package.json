@@ -4,5 +4,20 @@
   "private": true,
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "tsc && node  --trace-warnings dist/index.js"
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "dependencies": {
+    "@xmtp/xmtp-js": "^11.2.0",
+    "xmtp-bot-cli": "^0.0.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2"
+  }
 }
